@@ -1,7 +1,8 @@
 from tkinter import Frame, Canvas
 from PIL import Image, ImageTk
 
-class Image_frame(Frame):
+
+class ImageFrame(Frame):
 
     def __init__(self, parent, img_path1, img_path2):
         super().__init__(parent)
@@ -10,9 +11,10 @@ class Image_frame(Frame):
         self.img_path1 = img_path1
         self.img_path2 = img_path2
 
-        self.open_img(self.img_path1)
+        self.openImage(self.img_path1)
 
-    def open_img(self, path):
+
+    def openImage(self, path):
         self.img = Image.open(path)
         self.photo = ImageTk.PhotoImage(self.img)
         self.canvas = Canvas(self, height=self.img.size[1]+20, width=self.img.size[0]+20)
@@ -20,25 +22,27 @@ class Image_frame(Frame):
         self.canvas.grid(row=0, column=0)
         self.cur_path = path
 
-    def change_img(self):
+
+    def changeImage(self):
         if self.cur_path == self.img_path1:
             self.cur_path = self.img_path2
         else:
             self.cur_path = self.img_path1
 
-        self.open_img(self.cur_path)
+        self.openImage(self.cur_path)
 
 
 def main():
     # Test
     from tkinter import Tk
     window = Tk()
-    img_fr = Image_frame(window, "img1.png", "img2.png")
+    img_fr = ImageFrame(window, "img1.png", "img2.png")
     window.columnconfigure(0, weight=1)
     window.rowconfigure(0, weight=1)
     img_fr.grid(row=0, column=0)
-    #img_fr.change_img()
+    #img_fr.changeImage()
     window.mainloop()
+
 
 if __name__ == '__main__':
     main()

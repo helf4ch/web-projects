@@ -1,13 +1,15 @@
 from tkinter import Tk, Button, Frame, messagebox
 from tkinter.filedialog import askopenfilename
 
-class Open_file_button(Button):
+
+class OpenFileButton(Button):
     
     def __init__(self, parent, text):
-        super().__init__(parent, text=text, command=self.open_file)
+        super().__init__(parent, text=text, command=self.openFile)
         self.filepath = None
 
-    def open_file(self):
+
+    def openFile(self):
         self.filepath = askopenfilename()
 
         if not self.filepath:
@@ -15,12 +17,14 @@ class Open_file_button(Button):
 
         self["text"] = f"{self.filepath}"
 
-class Setup_window(Tk):
+
+class SetupWindow(Tk):
 
     def __init__(self):
         super().__init__()
         self.initUI()
         self.title("Setup")
+
 
     def initUI(self):
         self.columnconfigure(0, weight=1, minsize=400)
@@ -35,13 +39,14 @@ class Setup_window(Tk):
 
         self.btn_fr.grid(row=0, column=0, sticky='nsew')
 
-        self.top_btn = Open_file_button(self.btn_fr, 'First image')
-        self.mid_btn = Open_file_button(self.btn_fr, 'Second image')
+        self.top_btn = OpenFileButton(self.btn_fr, 'First image')
+        self.mid_btn = OpenFileButton(self.btn_fr, 'Second image')
         self.btm_btn = Button(self.btn_fr, text='OK', command=self.close)
 
         self.top_btn.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
         self.mid_btn.grid(row=1, column=0, sticky='nsew', padx=5)
         self.btm_btn.grid(row=2, column=0, sticky='nsew', padx=5, pady=5)
+
 
     def close(self):
         if not self.top_btn.filepath and not self.mid_btn.filepath:
@@ -56,9 +61,11 @@ class Setup_window(Tk):
 
         self.destroy()
 
+
 def main():
-    test = Setup_window()
+    test = SetupWindow()
     test.mainloop()
+
 
 if __name__ == '__main__':
     main()
