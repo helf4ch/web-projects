@@ -30,32 +30,32 @@ class SetupWindow(Tk):
         self.columnconfigure(0, weight=1, minsize=400)
         self.rowconfigure(0, weight=1, minsize=60)
 
-        self.btn_fr = Frame(self)
+        self.buttonFrame = Frame(self)
 
         for i in range(0, 3):
-            self.btn_fr.rowconfigure(i, weight=1)
+            self.buttonFrame.rowconfigure(i, weight=1)
 
-        self.btn_fr.columnconfigure(0, weight=1)
+        self.buttonFrame.columnconfigure(0, weight=1)
 
-        self.btn_fr.grid(row=0, column=0, sticky='nsew')
+        self.buttonFrame.grid(row=0, column=0, sticky='nsew')
 
-        self.top_btn = OpenFileButton(self.btn_fr, 'First image')
-        self.mid_btn = OpenFileButton(self.btn_fr, 'Second image')
-        self.btm_btn = Button(self.btn_fr, text='OK', command=self.close)
+        self.topButton = OpenFileButton(self.buttonFrame, 'First image')
+        self.midButton = OpenFileButton(self.buttonFrame, 'Second image')
+        self.bottomButton = Button(self.buttonFrame, text='OK', command=self.close)
 
-        self.top_btn.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
-        self.mid_btn.grid(row=1, column=0, sticky='nsew', padx=5)
-        self.btm_btn.grid(row=2, column=0, sticky='nsew', padx=5, pady=5)
+        self.topButton.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
+        self.midButton.grid(row=1, column=0, sticky='nsew', padx=5)
+        self.bottomButton.grid(row=2, column=0, sticky='nsew', padx=5, pady=5)
 
 
     def close(self):
-        if not self.top_btn.filepath and not self.mid_btn.filepath:
+        if not self.topButton.filepath and not self.midButton.filepath:
             messagebox.showerror("ERROR", "Images doesn't set")
             return
-        elif not self.top_btn.filepath: 
+        elif not self.topButton.filepath: 
             messagebox.showerror("ERROR", "First image doesn't set")
             return
-        elif not self.mid_btn.filepath:
+        elif not self.midButton.filepath:
             messagebox.showerror("ERROR", "Second image doesn't set")
             return
 
@@ -63,6 +63,7 @@ class SetupWindow(Tk):
 
 
 def main():
+    # Test
     test = SetupWindow()
     test.mainloop()
 
