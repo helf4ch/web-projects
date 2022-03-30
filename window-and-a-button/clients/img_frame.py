@@ -33,7 +33,7 @@ def main():
     # Test
     from tkinter import Tk
     window = Tk()
-    img_fr = Image_frame(window, "E:/Desktop/all/com-sci/python/WebProject1/img1.png", "img2.png")
+    img_fr = Image_frame(window, "img1.png", "img2.png")
     window.columnconfigure(0, weight=1)
     window.rowconfigure(0, weight=1)
     img_fr.grid(row=0, column=0)
