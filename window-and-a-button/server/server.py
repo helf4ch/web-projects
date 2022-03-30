@@ -4,27 +4,14 @@ import json
 
 
 IP = "localhost" # args parser 
-PORT = 80
+PORT = 8080
 
 
-connected = {}
-
-# connected:
-# {
-#       websocket:
-#           {
-#               "type": "ButtonApp" / "ImageApp"
-#           }
-# }
+connected = set()
 
 
 # jsons:
 # requests:
-# {
-#       "from": "ButtonApp" / "ImageApp",
-#       "type": "connect",
-# }
-
 # {
 #       "from": "ButtonApp",
 #       "type": "changeImage",
@@ -36,35 +23,29 @@ connected = {}
 # }
 
 
-async def onConnect(websocket, type):
-    connected[websocket]["type"] = type
-
-
 async def onChangeImage(websocket):
-    async for conn in connected[websocket]:
-        if conn["type"] == "ImageApp":
+    for conn in connected:
+        if connected != websocket:
             await conn.send(json.dumps( { "type": "changeImage" } ))
 
 
 async def messageHandler(websocket, message_parsed):
     type = message_parsed["type"]
     
-    if type == "connect":
-        await onConnect(websocket, message_parsed["from"])
-    
-    elif type == "changeImage":
+    if type == "changeImage":
         await onChangeImage(websocket)
     
     else:
         pass
 
 
-async def messageParse(message):
+def messageParse(message):
     return json.loads(message)
 
 
 async def handler(websocket):
     print("A client just connected.")
+    connected.add(websocket)
     try:
         async for message in websocket:
             await messageHandler(websocket, messageParse(message))
