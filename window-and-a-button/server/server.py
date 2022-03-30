@@ -3,7 +3,7 @@ import asyncio
 import json
 
 
-IP = "ws://185.242.106.198:8080"
+IP = "185.242.106.198"
 PORT = 8080
 
 
