@@ -11,6 +11,8 @@ class ButtonFrame(Frame):
         
     
     def initUI(self, func):
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
         self.button = Button(self, text="press me", command=func)
         self.button.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
 

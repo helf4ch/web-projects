@@ -22,8 +22,8 @@ class SetupWindow(Tk):
 
     def __init__(self):
         super().__init__()
-        self.initUI()
         self.title("Setup")
+        self.initUI()
 
 
     def initUI(self):
@@ -60,6 +60,10 @@ class SetupWindow(Tk):
             return
 
         self.destroy()
+        
+    
+    def getImagesPaths(self):
+        return (self.topButton.filepath, self.midButton.filepath)
 
 
 def main():
