@@ -1,6 +1,5 @@
 from ButtonFrame import ButtonFrame
 from tkinter import Tk 
-import threading
 import websockets
 import asyncio
 import json
@@ -21,13 +20,8 @@ class ButtonApp(Tk):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
         
-        button = ButtonFrame(self, self.onButtonPress)
+        button = ButtonFrame(self, self.runSendMessage)
         button.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
-        
-    
-    def onButtonPress(self):
-        self.send = threading.Thread(target=self.runSendMessage)
-        self.send.start()
         
     
     def runSendMessage(self):
