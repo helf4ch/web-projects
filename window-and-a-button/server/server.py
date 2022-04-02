@@ -1,40 +1,47 @@
+""" 
+jsons:
+
+requests:
+{
+    "from": "ButtonApp",
+    "type": "changeImage",
+}
+
+answers:
+{
+    "type": "changeImage",
+}
+"""
+
 import websockets
 import asyncio
 import json
+import argparse
 
+parser = argparse.ArgumentParser()
 
-IP = "185.242.106.198"
-PORT = 8080
+parser.add_argument("--ip", default="127.0.0.1")
+parser.add_argument("--port", default=80)
 
+args = parser.parse_args()
+
+IP = args.ip
+PORT = args.port
 
 connected = set()
-
-
-# jsons:
-# requests:
-# {
-#       "from": "ButtonApp",
-#       "type": "changeImage",
-# }
-
-# answers:
-# {
-#       "type": "changeImage",
-# }
 
 
 async def onChangeImage(websocket):
     for conn in connected:
         if connected != websocket:
-            await conn.send(json.dumps( { "type": "changeImage" } ))
+            await conn.send(json.dumps({"type": "changeImage"}))
 
 
 async def messageHandler(websocket, message_parsed):
     type = message_parsed["type"]
-    
+
     if type == "changeImage":
         await onChangeImage(websocket)
-    
     else:
         pass
 
@@ -53,7 +60,6 @@ async def handler(websocket):
         print("A client just disconnected.")
     finally:
         connected.remove(websocket)
-
 
 
 async def main():
