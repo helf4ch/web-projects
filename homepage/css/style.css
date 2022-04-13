@@ -47,6 +47,8 @@ p {
     padding-bottom: 50px;
 
     width: 600px;
+    display: flex;
+    flex-direction: column;
 }
 
 .card__photo {
