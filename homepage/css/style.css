@@ -33,8 +33,10 @@ p {
 }
 
 .main {
-    background-color: #372a39;
+    background-color: #372a39;    
+}
 
+.main__content {
     display: flex;
 }
 
