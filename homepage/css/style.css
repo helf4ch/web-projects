@@ -34,6 +34,8 @@ p {
 
 .main {
     background-color: #372a39;
+
+    display: flex;
 }
 
 .card {
@@ -83,4 +85,9 @@ p {
 
 .footer {
     color: #30d518;
+}
+
+.footer__content {
+    display: flex;
+    justify-content: center;
 }
