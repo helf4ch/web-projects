@@ -49,6 +49,7 @@ p {
     width: 600px;
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .card__photo {
