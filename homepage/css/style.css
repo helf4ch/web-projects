@@ -33,11 +33,11 @@ p {
 }
 
 .main {
-    background-color: #372a39;    
-}
-
-.main__content {
+    background-color: #372a39;
+    
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;   
 }
 
 .card {
@@ -47,9 +47,6 @@ p {
     padding-bottom: 50px;
 
     width: 600px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
 }
 
 .card__photo {
