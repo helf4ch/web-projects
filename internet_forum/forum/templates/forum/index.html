@@ -1,0 +1,76 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<div class="container text-center mb-5">
+    <div class="container my-2">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Add thread
+        </button>
+    </div>
+
+    <div class="container ">
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body ">
+
+                {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+                    <form action="{% url 'forum:new_thread' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="threadThemeText" class="form-label">Thread theme</label>
+                            <input type="text" name="theme" class="form-control" id="threadThemeText">
+                        </div>
+                        <div class="mb-3">
+                            <label for="postTextArea" class="form-label">Post text</label>
+                            <textarea name="post_text" class="form-control" id="postTextArea" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success">Submit</button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="container text-center">
+    <h3>Threads</h3>
+</div>
+
+{% if thread_list %}
+    {% for thread in thread_list %}
+        <div class="container my-4">
+            <div class="row">
+                <div class="col align-self-start">
+                    <h4><a href="{% url 'forum:detail' thread.id %}">{{ thread.theme }} -- {{ thread.pub_date }}</a></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-9 text-center">
+                    <p>{{ thread.post_set.all.first.post_text|truncatechars:255 }}<br>
+                    <a href="{% url 'users:profile' thread.post_set.all.first.post_author.id %}">{{ thread.post_set.all.first.post_author }}</a> -- {{ thread.post_set.all.first.pub_date }}</p>
+                </div>
+                <div class="col"></div>
+            </div>
+            {% if thread.post_set.all.first != thread.post_set.all.last %}
+                <div class="row">
+                    <div class="col text-center mb-3">...</div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-8 text-center">
+                        <p>{{ thread.post_set.all.last.post_text|truncatechars:255 }}<br>
+                        <a href="{% url 'users:profile' thread.post_set.all.last.post_author.id %}">{{ thread.post_set.all.last.post_author }}</a> -- {{ thread.post_set.all.last.pub_date }}</p>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No threads are available.</p>
+{% endif %}
+
+{% endblock content %}

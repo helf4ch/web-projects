@@ -1,0 +1,53 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+<div class="container text-center mb-5">
+    <h3>{{ thread.theme }} -- {{ thread.pub_date }}</h3>
+</div>
+
+{% if user.is_authenticated %}
+
+<div class="container text-center mb-5">
+    <div class="container my-2">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Add new post to thread
+        </button>
+    </div>
+
+    <div class="container ">
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body ">
+
+                {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+                <form action="{% url 'forum:new_post' thread.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="postTextArea" class="form-label">Post text</label>
+                        <textarea name="post_text" class="form-control" id="postTextArea" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% for post in thread.post_set.all %}
+    <div class="container my-4">
+        <div class="row">
+            <div class="col">
+                <h5><a href="{% url 'users:profile' post.post_author.id %}">{{ post.post_author }}</a> -- {{ post.pub_date }}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>{{ post.post_text }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% endblock content %}
