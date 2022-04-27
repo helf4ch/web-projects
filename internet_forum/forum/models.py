@@ -14,7 +14,7 @@ class Post(models.Model):
     post_text = models.CharField(max_length=10000)
     pub_date = models.DateTimeField()
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
-    post_author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    post_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
         end = ""
