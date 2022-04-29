@@ -37,8 +37,7 @@ def new_post(request, thread_id):
             'error_message': "Something goes wrong",
         })
     else:
-        post = thread.post_set.create(post_text=post_text, pub_date=timezone.now())
-        request.user.post_set.add(post)
+        thread.post_set.create(post_text=post_text, pub_date=timezone.now(), post_author=request.user)
         return HttpResponseRedirect(reverse('forum:detail', args=(thread_id,)))
 
 
@@ -63,7 +62,6 @@ def new_thread(request):
     else:
         thread = Thread(theme=theme, pub_date=timezone.now())
         thread.save()
-        post = thread.post_set.create(post_text=post_text, pub_date=timezone.now())
-        request.user.post_set.add(post)
+        thread.post_set.create(post_text=post_text, pub_date=timezone.now(), post_author=request.user)
         return HttpResponseRedirect(reverse('forum:detail', args=(thread.id,)))
     
