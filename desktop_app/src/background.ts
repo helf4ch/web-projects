@@ -5,6 +5,9 @@ import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("@electron/remote/main").initialize();
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
@@ -24,15 +27,12 @@ async function createWindow() {
       nodeIntegration: process.env
         .ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      //enableRemoteModule: true,
       webSecurity: false,
     },
   });
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("@electron/remote")
-    .require("@electron/remote/main")
-    .enable(win.webContents);
+  require("@electron/remote/main").enable(win.webContents);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

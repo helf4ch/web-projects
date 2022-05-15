@@ -47,60 +47,9 @@ export default defineComponent({
     ...mapActions({
       onEnd: "player/onEnd",
     }),
-    canvasInitialize() {
-      this.$refs.canvas.width = this.$refs.player.clientWidth;
-      this.$refs.canvas.height = this.$refs.player.clientHeight;
-    },
-    audioVisuallizer() {
-      const canvasWidth = this.$refs.canvas.width;
-      const canvasHeight = this.$refs.canvas.height;
-      const audioContext = new AudioContext();
-      const canvasContext = this.$refs.canvas.getContext("2d");
-
-      const audioSource = audioContext.createMediaElementSource(
-        this.$refs.audio
-      );
-      const analyser = audioContext.createAnalyser();
-
-      audioSource.connect(analyser);
-      analyser.connect(audioContext.destination);
-
-      analyser.fftSize = 32;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-
-      const barWidth = canvasWidth / bufferLength;
-
-      function animate() {
-        let x = 0;
-
-        console.log(canvasWidth);
-
-        canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-        analyser.getByteFrequencyData(dataArray);
-
-        for (let i = 0; i < bufferLength; ++i) {
-          let barHeight = dataArray[i];
-          canvasContext.fillStyle = "white";
-          canvasContext.fillRect(
-            x,
-            canvasHeight - barHeight,
-            barWidth,
-            barHeight
-          );
-          x += barWidth;
-        }
-
-        requestAnimationFrame(animate);
-      }
-
-      animate();
-    },
     playTrack() {
       this.$refs.audio.play();
       this.setIsPlaying(true);
-      this.audioVisuallizer();
       // var playPromise = this.$refs.audio.play();
 
       // if (playPromise !== undefined) {
@@ -158,6 +107,94 @@ export default defineComponent({
         }
       };
     },
+    canvasInitialize() {
+      this.$refs.canvas.width = this.$refs.player.clientWidth;
+      this.$refs.canvas.height = this.$refs.player.clientHeight;
+    },
+    audioVisuallizer() {
+      const canvasWidth = this.$refs.canvas.width;
+      const canvasHeight = this.$refs.canvas.height;
+      const audioContext = new AudioContext();
+      const canvasContext = this.$refs.canvas.getContext("2d");
+
+      const audioSource = audioContext.createMediaElementSource(
+        this.$refs.audio
+      );
+      const analyser = audioContext.createAnalyser();
+
+      audioSource.connect(analyser);
+      analyser.connect(audioContext.destination);
+
+      analyser.fftSize = 32;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const barWidth = canvasWidth / bufferLength;
+
+      const collorArray = [
+        "#cc241d",
+        "#d65d0e",
+        "#d79921",
+        "#98971a",
+        "#689d6a",
+        "#458588",
+        "#b16286",
+        "#928374",
+      ];
+
+      function animate() {
+        let x = canvasWidth / 2;
+
+        canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        analyser.getByteFrequencyData(dataArray);
+
+        // for (let i = 0; i < bufferLength; ++i) {
+        //   let barHeight = dataArray[i];
+
+        //   canvasContext.fillStyle = collorArray[i % 8];
+        //   canvasContext.fillRect(
+        //     x,
+        //     canvasHeight - barHeight,
+        //     barWidth,
+        //     barHeight
+        //   );
+        //   x += barWidth;
+        // }
+
+        for (let i = 0; i < bufferLength; i += 2) {
+          let barHeight = (canvasHeight / 2 / 255) * dataArray[i];
+
+          canvasContext.fillStyle = collorArray[(i / 2) % 8];
+          canvasContext.fillRect(
+            x,
+            canvasHeight - barHeight,
+            barWidth,
+            barHeight
+          );
+          x += barWidth;
+        }
+
+        x = canvasWidth / 2 - barWidth;
+
+        for (let i = 1; i < bufferLength; i += 2) {
+          let barHeight = (canvasHeight / 2 / 255) * dataArray[i];
+
+          canvasContext.fillStyle = collorArray[Math.floor(i / 2) % 8];
+          canvasContext.fillRect(
+            x,
+            canvasHeight - barHeight,
+            barWidth,
+            barHeight
+          );
+          x -= barWidth;
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    },
   },
   computed: {
     ...mapState({
@@ -178,6 +215,7 @@ export default defineComponent({
     this.loadTrack();
     this.initAudio();
     this.canvasInitialize();
+    this.audioVisuallizer();
   },
 });
 </script>
@@ -192,11 +230,13 @@ export default defineComponent({
   justify-content: center;
   margin: 20px;
   padding: 25px;
+  border: 5px solid #928374;
 }
 
 .canvas {
   position: absolute;
   z-index: -1;
-  border-radius: 14px;
+  border-radius: 5px;
+  opacity: 0.8;
 }
 </style>
