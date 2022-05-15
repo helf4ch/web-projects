@@ -10,8 +10,12 @@ export const playingModule = {
     },
   }),
   mutations: {
-    setIsPlaying(state, isPlaying: boolean) {
-      state.isPlaying = isPlaying;
+    playPauseTrack(state) {
+      if (state.isPlaying) {
+        state.isPlaying = false;
+      } else {
+        state.isPlaying = true;
+      }
     },
     setTrackList(state, trackList) {
       state.trackList = trackList;

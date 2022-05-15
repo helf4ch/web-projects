@@ -2,10 +2,7 @@
   <audio ref="audio" style="display: none"></audio>
   <div ref="player" class="player">
     <detail-panel></detail-panel>
-    <player-controll-buttons
-      @playTrack="playTrack"
-      @pauseTrack="pauseTrack"
-    ></player-controll-buttons>
+    <player-controll-buttons></player-controll-buttons>
     <sliders-panel
       :currentTime="currentTime"
       :duration="duration"
@@ -47,24 +44,18 @@ export default defineComponent({
     ...mapActions({
       onEnd: "player/onEnd",
     }),
+    PlayPauseTrack() {
+      if (this.isPlaying) {
+        this.playTrack();
+      } else {
+        this.pauseTrack();
+      }
+    },
     playTrack() {
       this.$refs.audio.play();
-      this.setIsPlaying(true);
-      // var playPromise = this.$refs.audio.play();
-
-      // if (playPromise !== undefined) {
-      //   playPromise
-      //     .then((_) => {
-      //       console.log(_);
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //     });
-      // }
     },
     pauseTrack() {
       this.$refs.audio.pause();
-      this.setIsPlaying(false);
     },
     loadTrack() {
       this.$refs.audio.src = "file://" + this.trackList[this.trackIndex].path;
@@ -149,19 +140,6 @@ export default defineComponent({
         canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
         analyser.getByteFrequencyData(dataArray);
 
-        // for (let i = 0; i < bufferLength; ++i) {
-        //   let barHeight = dataArray[i];
-
-        //   canvasContext.fillStyle = collorArray[i % 8];
-        //   canvasContext.fillRect(
-        //     x,
-        //     canvasHeight - barHeight,
-        //     barWidth,
-        //     barHeight
-        //   );
-        //   x += barWidth;
-        // }
-
         for (let i = 0; i < bufferLength; i += 2) {
           let barHeight = (canvasHeight / 2 / 255) * dataArray[i];
 
@@ -210,6 +188,9 @@ export default defineComponent({
       this.loadTrack();
       this.playTrack();
     },
+    isPlaying() {
+      this.PlayPauseTrack();
+    },
   },
   mounted() {
     this.loadTrack();
@@ -222,7 +203,6 @@ export default defineComponent({
 
 <style scoped>
 .player {
-  /* background-color: #928374; */
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -230,7 +210,7 @@ export default defineComponent({
   justify-content: center;
   margin: 20px;
   padding: 25px;
-  border: 5px solid #928374;
+  border: 5px solid #665c54;
 }
 
 .canvas {

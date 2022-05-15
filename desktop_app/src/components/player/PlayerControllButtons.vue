@@ -1,20 +1,17 @@
 <template>
   <player-buttons>
     <prev-button></prev-button>
-    <play-pause-button
-      :isPlaying="isPlaying"
-      @click="PlayPauseTrack"
-    ></play-pause-button>
+    <play-pause-button @click="playPauseTrack"></play-pause-button>
     <next-button></next-button>
   </player-buttons>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import PrevButton from "@/components/player/buttons/PrevButton.vue";
 import PlayPauseButton from "@/components/player/buttons/PlayPauseButton.vue";
 import NextButton from "@/components/player/buttons/NextButton.vue";
-import { mapState } from "vuex";
+import { mapMutations } from "vuex";
 
 export default defineComponent({
   components: {
@@ -23,17 +20,8 @@ export default defineComponent({
     NextButton,
   },
   methods: {
-    PlayPauseTrack() {
-      if (this.isPlaying) {
-        this.$emit("pauseTrack");
-      } else {
-        this.$emit("playTrack");
-      }
-    },
-  },
-  computed: {
-    ...mapState({
-      isPlaying: (state: any) => state.player.isPlaying,
+    ...mapMutations({
+      playPauseTrack: "player/playPauseTrack",
     }),
   },
 });

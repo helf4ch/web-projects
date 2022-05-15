@@ -1,25 +1,25 @@
 <template>
   <div class="details">
-    <div class="track-title" v-if="this.trackList[this.trackIndex].title">
-      {{ this.trackList[this.trackIndex].title }}
+    <div class="track-title" v-if="trackList[trackIndex].title">
+      {{ trackList[trackIndex].title }}
     </div>
     <div class="track-title" v-else>Unknown</div>
-    <div class="track-artist" v-if="this.trackList[this.trackIndex].artist">
-      {{ this.trackList[this.trackIndex].artist }}
+    <div class="track-artist" v-if="trackList[trackIndex].artist">
+      {{ trackList[trackIndex].artist }}
     </div>
     <div class="track-artist" v-else>Unknown</div>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
 
 export default defineComponent({
   computed: {
     ...mapState({
-      trackList: (state: any) => state.player.trackList,
-      trackIndex: (state: any) => state.player.trackIndex,
+      trackList: (state) => state.player.trackList,
+      trackIndex: (state) => state.player.trackIndex,
     }),
   },
 });

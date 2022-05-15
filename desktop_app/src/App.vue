@@ -1,29 +1,25 @@
 <template>
   <player-app></player-app>
-  <!-- <div>
-    <audio controls>
-      <source
-        src="file:///home/helf4ch/Музыка/Rammstein_-_Mein_Herz_brennt.mp3"
-        type="audio/mpeg"
-      />
-    </audio>
-  </div> -->
-  <div class="explorer"></div>
+  <explorer-app></explorer-app>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
 import PlayerApp from "@/components/player/PlayerApp.vue";
-import { getFilesAndTracks } from "@/hooks/getFilesAndTracks";
+import ExplorerApp from "@/components/explorer/ExplorerApp.vue";
+import { getFiles } from "@/hooks/getFiles";
+import { getTracks } from "@/hooks/getTracks";
 import { mapMutations } from "vuex";
 
 export default defineComponent({
   components: {
     PlayerApp,
+    ExplorerApp,
   },
   setup() {
-    const { path, files, trackList } = getFilesAndTracks();
+    const { path, files } = getFiles();
+    const { trackList } = getTracks(files);
 
     return {
       path,
@@ -34,10 +30,14 @@ export default defineComponent({
   methods: {
     ...mapMutations({
       setTrackList: "player/setTrackList",
+      setAppPath: "explorer/setAppPath",
+      setFilesArray: "explorer/setFilesArray",
     }),
   },
   created() {
     this.setTrackList(this.trackList);
+    this.setAppPath(this.path);
+    this.setFilesArray(this.files);
   },
 });
 </script>
