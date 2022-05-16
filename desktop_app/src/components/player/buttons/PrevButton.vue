@@ -1,13 +1,13 @@
 <template>
   <player-button>
-    <prev-button-icon @click="this.prevTrack"></prev-button-icon>
+    <prev-button-icon @click="prevTrackHandler"></prev-button-icon>
   </player-button>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import PrevButtonIcon from "@/components/UI/icons/PrevButtonIcon.vue";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default defineComponent({
   components: {
@@ -16,6 +16,18 @@ export default defineComponent({
   methods: {
     ...mapMutations({
       prevTrack: "player/prevTrack",
+    }),
+    prevTrackHandler() {
+      if (this.trackList.length === 1) {
+        this.$emit("repeatTrack");
+      } else {
+        this.prevTrack();
+      }
+    },
+  },
+  computed: {
+    ...mapState({
+      trackList: (state) => state.player.trackList,
     }),
   },
 });

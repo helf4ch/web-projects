@@ -1,8 +1,8 @@
 <template>
   <player-buttons>
-    <prev-button></prev-button>
+    <prev-button @repeatTrack="repeatTrack"></prev-button>
     <play-pause-button @click="playPauseTrack"></play-pause-button>
-    <next-button></next-button>
+    <next-button @repeatTrack="repeatTrack"></next-button>
   </player-buttons>
 </template>
 
@@ -23,6 +23,9 @@ export default defineComponent({
     ...mapMutations({
       playPauseTrack: "player/playPauseTrack",
     }),
+    repeatTrack() {
+      this.$emit("repeatTrack");
+    },
   },
 });
 </script>
