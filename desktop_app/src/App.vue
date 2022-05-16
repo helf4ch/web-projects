@@ -1,6 +1,9 @@
 <template>
   <audio ref="audio" style="display: none"></audio>
   <div ref="player" class="player">
+    <equaliser-sliders
+      :equaliserGainValues="equaliserGainValues"
+    ></equaliser-sliders>
     <detail-panel></detail-panel>
     <player-controll-buttons
       @repeatTrack="repeatTrack"
@@ -15,7 +18,7 @@
     <buttons-panel></buttons-panel>
     <canvas ref="canvas" class="canvas"></canvas>
   </div>
-  <div class="explorer">
+  <div v-if="isExplorerActive" class="explorer">
     <explorer-header @reloadExplorer="reloadExplorer"></explorer-header>
     <explorer-element-list
       @changeTrackList="changeTrackList"
@@ -29,6 +32,7 @@ import PlayerControllButtons from "@/components/player/PlayerControllButtons.vue
 import DetailPanel from "@/components/player/DetailPanel.vue";
 import SlidersPanel from "@/components/player/SlidersPanel.vue";
 import ButtonsPanel from "@/components/player/ButtonsPanel.vue";
+import EqualiserSliders from "@/components/player/EqualiserSliders.vue";
 import ExplorerElementList from "@/components/explorer/ExplorerElementList.vue";
 import ExplorerHeader from "@/components/explorer/ExplorerHeader.vue";
 import { getFiles } from "@/hooks/getFiles";
@@ -44,6 +48,7 @@ export default defineComponent({
     ButtonsPanel,
     ExplorerElementList,
     ExplorerHeader,
+    EqualiserSliders,
   },
   setup() {
     let path = ref(app.getPath("music"));
@@ -62,6 +67,18 @@ export default defineComponent({
       currentTime: 0,
       duration: 0,
       volumeValue: 50,
+      equaliserGainValues: [
+        { id: 0, gain: 0 },
+        { id: 1, gain: 0 },
+        { id: 2, gain: 0 },
+        { id: 3, gain: 0 },
+        { id: 4, gain: 0 },
+        { id: 5, gain: 0 },
+        { id: 6, gain: 0 },
+        { id: 7, gain: 0 },
+        { id: 8, gain: 0 },
+        { id: 9, gain: 0 },
+      ],
     };
   },
   methods: {
@@ -156,9 +173,10 @@ export default defineComponent({
       this.$refs.canvas.width = this.$refs.player.clientWidth;
       this.$refs.canvas.height = this.$refs.player.clientHeight;
     },
-    audioVisuallizer() {
+    audioVisuallizerAndEqualiser() {
       const canvasWidth = this.$refs.canvas.width;
       const canvasHeight = this.$refs.canvas.height;
+
       const audioContext = new AudioContext();
       const canvasContext = this.$refs.canvas.getContext("2d");
 
@@ -167,7 +185,36 @@ export default defineComponent({
       );
       const analyser = audioContext.createAnalyser();
 
+      function createFilter(frequency) {
+        const filter = audioContext.createBiquadFilter();
+
+        filter.type = "peaking";
+        filter.frequency.value = frequency;
+        filter.Q.value = 1;
+        filter.gain.value = 0;
+
+        return filter;
+      }
+
+      function createFilters() {
+        const frequencies = [
+          60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000,
+        ];
+        const filters = frequencies.map(createFilter);
+
+        filters.reduce(function (prev, curr) {
+          prev.connect(curr);
+          return curr;
+        });
+
+        return filters;
+      }
+
+      const filters = createFilters();
+
+      audioSource.connect(filters[0]);
       audioSource.connect(analyser);
+      filters[filters.length - 1].connect(audioContext.destination);
       analyser.connect(audioContext.destination);
 
       analyser.fftSize = 32;
@@ -236,6 +283,7 @@ export default defineComponent({
       trackIndex: (state) => state.player.trackIndex,
       repeatType: (state) => state.player.repeatType,
       pathToTrackList: (state) => state.player.pathToTrackList,
+      isExplorerActive: (state) => state.explorer.isExplorerActive,
     }),
   },
   created() {
@@ -248,7 +296,7 @@ export default defineComponent({
     this.loadTrack();
     this.initAudio();
     this.canvasInitialize();
-    this.audioVisuallizer();
+    this.audioVisuallizerAndEqualiser();
   },
   watch: {
     currentPath() {

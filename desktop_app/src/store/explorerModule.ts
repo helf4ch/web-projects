@@ -3,6 +3,7 @@ export const explorerModule = {
     currentPath: "",
     prevPath: "",
     files: [],
+    isExplorerActive: false,
   }),
   mutations: {
     setAppPath(state, path) {
@@ -11,6 +12,9 @@ export const explorerModule = {
     },
     setFilesArray(state, files) {
       state.files = files;
+    },
+    changeExplorerActive(state) {
+      state.isExplorerActive = !state.isExplorerActive;
     },
     goToPrevPath(state) {
       if (state.prevPath === "") {

@@ -36,9 +36,11 @@ export default defineComponent({
 
 .track-title {
   font-size: 3rem;
+  text-align: center;
 }
 
 .track-artist {
   font-size: 1.5rem;
+  text-align: center;
 }
 </style>

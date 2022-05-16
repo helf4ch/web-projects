@@ -6,6 +6,7 @@
       min="0"
       max="100"
       class="seek-slider"
+      step="0.4"
       :value="(currentTime / duration) * 100"
       @input="updateCurrentTime"
     />
