@@ -1,16 +1,17 @@
 <template>
   <player-app></player-app>
-  <explorer-app></explorer-app>
+  <explorer-app @changeTrackList="changeTrackList"></explorer-app>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script>
+import { ref, defineComponent } from "vue";
 
 import PlayerApp from "@/components/player/PlayerApp.vue";
 import ExplorerApp from "@/components/explorer/ExplorerApp.vue";
 import { getFiles } from "@/hooks/getFiles";
 import { getTracks } from "@/hooks/getTracks";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
+import { app } from "@electron/remote";
 
 export default defineComponent({
   components: {
@@ -18,7 +19,9 @@ export default defineComponent({
     ExplorerApp,
   },
   setup() {
-    const { path, files } = getFiles();
+    const path = ref(app.getPath("music"));
+
+    const { files } = getFiles(path);
     const { trackList } = getTracks(files);
 
     return {
@@ -30,14 +33,32 @@ export default defineComponent({
   methods: {
     ...mapMutations({
       setTrackList: "player/setTrackList",
+      setPathToTrackList: "player/setPathToTrackList",
       setAppPath: "explorer/setAppPath",
       setFilesArray: "explorer/setFilesArray",
     }),
+    changeTrackList() {
+      this.setPathToTrackList(this.path);
+      this.setTrackList(this.trackList);
+    },
+  },
+  computed: {
+    ...mapState({
+      currentPath: (state) => state.explorer.currentPath,
+    }),
   },
   created() {
-    this.setTrackList(this.trackList);
+    this.changeTrackList();
     this.setAppPath(this.path);
     this.setFilesArray(this.files);
+  },
+  watch: {
+    currentPath() {
+      this.path = this.currentPath;
+    },
+    files() {
+      this.setFilesArray(this.files);
+    },
   },
 });
 </script>

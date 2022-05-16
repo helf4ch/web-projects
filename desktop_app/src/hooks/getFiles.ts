@@ -1,11 +1,8 @@
-import { ref, computed } from "vue";
-import { app } from "@electron/remote";
+import { computed } from "vue";
 import fs from "fs";
 import pathModule from "path";
 
-export function getFiles() {
-  const path = ref(app.getPath("music"));
-
+export function getFiles(path) {
   const files = computed(() => {
     const fileNames = fs.readdirSync(path.value);
     return fileNames
@@ -33,7 +30,6 @@ export function getFiles() {
   });
 
   return {
-    path,
     files,
   };
 }

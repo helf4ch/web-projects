@@ -1,9 +1,11 @@
 <template>
   <div class="explorer">
     <div class="explorer-header">
-      {{ path }}
+      {{ currentPath }}
     </div>
-    <explorer-element-list></explorer-element-list>
+    <explorer-element-list
+      @changeTrackList="changeTrackList"
+    ></explorer-element-list>
   </div>
 </template>
 
@@ -17,10 +19,16 @@ export default defineComponent({
   components: {
     ExplorerElementList,
   },
+  emits: ["changeTrackList"],
   computed: {
     ...mapState({
-      path: (state) => state.explorer.path,
+      currentPath: (state) => state.explorer.currentPath,
     }),
+  },
+  methods: {
+    changeTrackList() {
+      this.$emit("changeTrackList");
+    },
   },
 });
 </script>

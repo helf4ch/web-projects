@@ -1,5 +1,6 @@
 export const playingModule = {
   state: () => ({
+    pathToTrackList: "",
     isPlaying: false,
     trackList: [],
     trackIndex: 0,
@@ -17,14 +18,17 @@ export const playingModule = {
         state.isPlaying = true;
       }
     },
+    setPathToTrackList(state, path) {
+      state.pathToTrackList = path;
+    },
     setTrackList(state, trackList) {
       state.trackList = trackList;
     },
     setTrackIndex(state, index) {
-      if (index >= state.trackList.length - 1) {
+      if (index >= state.trackList.length) {
         state.trackIndex = 0;
       } else {
-        state.trackIndex += index;
+        state.trackIndex = index;
       }
     },
     nextTrack(state) {

@@ -21,7 +21,7 @@ import PlayerControllButtons from "@/components/player/PlayerControllButtons.vue
 import DetailPanel from "@/components/player/DetailPanel.vue";
 import SlidersPanel from "@/components/player/SlidersPanel.vue";
 import ButtonsPanel from "@/components/player/ButtonsPanel.vue";
-import { mapMutations, mapState, mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default defineComponent({
   components: {
@@ -38,13 +38,10 @@ export default defineComponent({
     };
   },
   methods: {
-    ...mapMutations({
-      setIsPlaying: "player/setIsPlaying",
-    }),
     ...mapActions({
       onEnd: "player/onEnd",
     }),
-    PlayPauseTrack() {
+    playPauseTrack() {
       if (this.isPlaying) {
         this.playTrack();
       } else {
@@ -60,6 +57,11 @@ export default defineComponent({
     loadTrack() {
       this.$refs.audio.src = "file://" + this.trackList[this.trackIndex].path;
       this.$refs.audio.load();
+    },
+    onTrackChange() {
+      this.pauseTrack();
+      this.loadTrack();
+      this.playPauseTrack();
     },
     updateCurrentTime(newValue) {
       this.currentTime = this.duration * (newValue / 100);
@@ -180,16 +182,18 @@ export default defineComponent({
       trackList: (state) => state.player.trackList,
       trackIndex: (state) => state.player.trackIndex,
       repeatType: (state) => state.player.repeatType,
+      pathToTrackList: (state) => state.player.pathToTrackList,
     }),
   },
   watch: {
     trackIndex() {
-      this.pauseTrack();
-      this.loadTrack();
-      this.playTrack();
+      this.onTrackChange();
     },
     isPlaying() {
-      this.PlayPauseTrack();
+      this.playPauseTrack();
+    },
+    pathToTrackList() {
+      this.onTrackChange();
     },
   },
   mounted() {
