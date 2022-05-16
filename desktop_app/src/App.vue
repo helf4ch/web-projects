@@ -1,6 +1,9 @@
 <template>
   <player-app></player-app>
-  <explorer-app @changeTrackList="changeTrackList"></explorer-app>
+  <explorer-app
+    @changeTrackList="changeTrackList"
+    @reloadExplorer="reloadExplorer"
+  ></explorer-app>
 </template>
 
 <script>
@@ -19,10 +22,10 @@ export default defineComponent({
     ExplorerApp,
   },
   setup() {
-    const path = ref(app.getPath("music"));
+    let path = ref(app.getPath("music"));
 
-    const { files } = getFiles(path);
-    const { trackList } = getTracks(files);
+    let { files } = getFiles(path);
+    let { trackList } = getTracks(files);
 
     return {
       path,
@@ -36,10 +39,21 @@ export default defineComponent({
       setPathToTrackList: "player/setPathToTrackList",
       setAppPath: "explorer/setAppPath",
       setFilesArray: "explorer/setFilesArray",
+      reloadPlayer: "player/reloadPlayer",
     }),
     changeTrackList() {
       this.setPathToTrackList(this.path);
       this.setTrackList(this.trackList);
+    },
+    reloadExplorer() {
+      // this.path = "";
+      // this.path = app.getPath("music");
+      // this.setAppPath(this.path);
+      // // this.files = getFiles(this.path);
+      // // this.changeTrackList();
+      // // this.$forceUpdate();
+      // this.changeTrackList();
+      // this.reloadPlayer();
     },
   },
   computed: {
@@ -56,8 +70,11 @@ export default defineComponent({
     currentPath() {
       this.path = this.currentPath;
     },
-    files() {
-      this.setFilesArray(this.files);
+    files: {
+      handler(newValue) {
+        this.setFilesArray(newValue);
+      },
+      deep: true,
     },
   },
 });

@@ -1,8 +1,6 @@
 <template>
   <div class="explorer">
-    <div class="explorer-header">
-      {{ currentPath }}
-    </div>
+    <explorer-header @reloadExplorer="reloadExplorer"></explorer-header>
     <explorer-element-list
       @changeTrackList="changeTrackList"
     ></explorer-element-list>
@@ -11,23 +9,22 @@
 
 <script>
 import { defineComponent } from "vue";
-import { mapState } from "vuex";
 
 import ExplorerElementList from "@/components/explorer/ExplorerElementList.vue";
+import ExplorerHeader from "@/components/explorer/ExplorerHeader.vue";
 
 export default defineComponent({
   components: {
     ExplorerElementList,
+    ExplorerHeader,
   },
-  emits: ["changeTrackList"],
-  computed: {
-    ...mapState({
-      currentPath: (state) => state.explorer.currentPath,
-    }),
-  },
+  emits: ["changeTrackList", "reloadExplorer"],
   methods: {
     changeTrackList() {
       this.$emit("changeTrackList");
+    },
+    reloadExplorer() {
+      this.$emit("reloadExplorer");
     },
   },
 });

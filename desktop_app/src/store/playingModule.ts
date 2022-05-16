@@ -57,6 +57,11 @@ export const playingModule = {
         state.repeatType.repeatTrack = true;
       }
     },
+    // reloadPlayer(state) {
+    //   state.isPlaying = false;
+    //   state.trackIndex = -1;
+    //   state.trackIndex = 0;
+    // },
   },
   actions: {
     onEnd({ commit, state }) {
