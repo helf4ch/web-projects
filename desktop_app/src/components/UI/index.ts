@@ -1,4 +1,5 @@
 import PlayerButton from "@/components/UI/PlayerButton.vue";
 import PlayerButtons from "@/components/UI/PlayerButtons.vue";
+import PlayerSlider from "@/components/UI/PlayerSlider.vue";
 
-export default [PlayerButton, PlayerButtons];
+export default [PlayerButton, PlayerButtons, PlayerSlider];

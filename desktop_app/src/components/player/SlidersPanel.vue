@@ -1,32 +1,30 @@
 <template>
   <div class="slider-container">
     {{ currentTimeConverted }}
-    <input
-      type="range"
+    <player-slider
       min="0"
       max="100"
-      class="seek-slider"
       step="0.4"
       :value="(currentTime / duration) * 100"
       @input="updateCurrentTime"
-    />
+      class="seek-slider"
+    ></player-slider>
     {{ durationTimeConverted }}
   </div>
   <div class="slider-container">
     <volume-down-icon></volume-down-icon>
-    <input
-      type="range"
+    <player-slider
       min="0"
       max="100"
-      class="volume-slider"
       :value="volumeValue"
       @input="updateVolumeValue"
+      class="volume-slider"
     />
     <volume-up-icon></volume-up-icon>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import VolumeUpIcon from "@/components/UI/icons/VolumeUpIcon.vue";
 import VolumeDownIcon from "@/components/UI/icons/VolumeDownIcon.vue";
@@ -37,12 +35,17 @@ export default defineComponent({
     VolumeDownIcon,
   },
   props: {
-    currentTime: [Number],
+    currentTime: [String, Number],
     volumeValue: [String, Number],
     duration: {
       type: Number,
       required: true,
     },
+  },
+  data() {
+    return {
+      currentTimeInProcents: 0,
+    };
   },
   emits: ["updateVolumeValue", "updateCurrentTime"],
   methods: {
@@ -86,8 +89,7 @@ export default defineComponent({
 
 <style scoped>
 .slider-container {
-  width: 75%;
-  max-width: 400px;
+  width: 400px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -100,36 +102,5 @@ export default defineComponent({
 
 .volume-slider {
   width: 30%;
-}
-
-.seek-slider,
-.volume-slider {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  height: 8px;
-  background: #665c54;
-  opacity: 0.7;
-  -webkit-transition: 0.2s;
-  transition: opacity 0.2s;
-  border-radius: 5px;
-  margin: 0px 10px;
-}
-
-.seek-slider::-webkit-slider-thumb,
-.volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  width: 15px;
-  height: 15px;
-  background: #ebdbb2;
-  cursor: pointer;
-  border-radius: 50%;
-}
-
-.seek-slider:hover,
-.volume-slider:hover {
-  opacity: 1;
 }
 </style>

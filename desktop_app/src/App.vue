@@ -3,6 +3,7 @@
   <div ref="player" class="player">
     <equaliser-sliders
       :equaliserGainValues="equaliserGainValues"
+      @changeGainValueById="changeGainValueById"
     ></equaliser-sliders>
     <detail-panel></detail-panel>
     <player-controll-buttons
@@ -112,7 +113,9 @@ export default defineComponent({
       }
     },
     playTrack() {
+      console.log(this.equaliserGainValues);
       this.$refs.audio.play();
+      console.log(this.filters);
     },
     pauseTrack() {
       this.$refs.audio.pause();
@@ -138,6 +141,11 @@ export default defineComponent({
     updateVolumeValue(newValue) {
       this.volumeValue = newValue;
       this.$refs.audio.volume = this.volumeValue / 100;
+    },
+    changeGainValueById(gainValueId, newValue) {
+      console.log(this.filters.value[gainValueId].gain.value);
+      this.equaliserGainValues[gainValueId].gain = Number(newValue);
+      this.filters.value[gainValueId].gain.value = Number(newValue);
     },
     initAudio() {
       const audio = this.$refs.audio;
@@ -210,11 +218,12 @@ export default defineComponent({
         return filters;
       }
 
-      const filters = createFilters();
+      const filters = ref(createFilters());
+      console.log(filters);
 
-      audioSource.connect(filters[0]);
+      audioSource.connect(filters.value[0]);
       audioSource.connect(analyser);
-      filters[filters.length - 1].connect(audioContext.destination);
+      filters.value[filters.value.length - 1].connect(audioContext.destination);
       analyser.connect(audioContext.destination);
 
       analyser.fftSize = 32;

@@ -4,7 +4,7 @@
   </player-button>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import PrevButtonIcon from "@/components/UI/icons/PrevButtonIcon.vue";
 import { mapMutations, mapState } from "vuex";
