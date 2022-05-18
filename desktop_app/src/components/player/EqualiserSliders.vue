@@ -10,7 +10,6 @@
       :value="gainValue.gain"
       @input="$emit('changeGainValueById', gainValue.id, $event.target.value)"
     />
-    <!-- @input="$emit('changeGainValueById', gainValue.id, event.target.value)" -->
   </div>
 </template>
 

@@ -1,5 +1,4 @@
 <template>
-  <audio ref="audio" style="display: none"></audio>
   <div ref="player" class="player">
     <equaliser-sliders
       :equaliserGainValues="equaliserGainValues"
@@ -38,6 +37,7 @@ import ExplorerElementList from "@/components/explorer/ExplorerElementList.vue";
 import ExplorerHeader from "@/components/explorer/ExplorerHeader.vue";
 import { getFiles } from "@/hooks/getFiles";
 import { getTracks } from "@/hooks/getTracks";
+import { initAudio } from "@/hooks/initAudio";
 import { mapMutations, mapState, mapActions } from "vuex";
 import { app } from "@electron/remote";
 
@@ -57,10 +57,17 @@ export default defineComponent({
     let { files } = getFiles(path);
     let { trackList } = getTracks(files);
 
+    const { audioElement, analyser, filters, visualiserDataArray } =
+      initAudio();
+
     return {
       path,
       files,
       trackList,
+      audioElement,
+      analyser,
+      filters,
+      visualiserDataArray,
     };
   },
   data() {
@@ -113,12 +120,10 @@ export default defineComponent({
       }
     },
     playTrack() {
-      console.log(this.equaliserGainValues);
-      this.$refs.audio.play();
-      console.log(this.filters);
+      this.audioElement.play();
     },
     pauseTrack() {
-      this.$refs.audio.pause();
+      this.audioElement.pause();
     },
     repeatTrack() {
       this.pauseTrack();
@@ -126,8 +131,8 @@ export default defineComponent({
       this.playTrack();
     },
     loadTrack() {
-      this.$refs.audio.src = "file://" + this.trackList[this.trackIndex].path;
-      this.$refs.audio.load();
+      this.audioElement.src = "file://" + this.trackList[this.trackIndex].path;
+      this.audioElement.load();
     },
     onTrackChange() {
       this.pauseTrack();
@@ -136,23 +141,27 @@ export default defineComponent({
     },
     updateCurrentTime(newValue) {
       this.currentTime = this.duration * (newValue / 100);
-      this.$refs.audio.currentTime = this.currentTime;
+      this.audioElement.currentTime = this.currentTime;
     },
     updateVolumeValue(newValue) {
       this.volumeValue = newValue;
-      this.$refs.audio.volume = this.volumeValue / 100;
+      this.audioElement.volume = this.volumeValue / 100;
     },
     changeGainValueById(gainValueId, newValue) {
-      console.log(this.filters.value[gainValueId].gain.value);
       this.equaliserGainValues[gainValueId].gain = Number(newValue);
-      this.filters.value[gainValueId].gain.value = Number(newValue);
+      this.filters[gainValueId].gain.value = Number(newValue);
     },
-    initAudio() {
-      const audio = this.$refs.audio;
+    setupCanvas() {
+      this.$refs.canvas.width = this.$refs.player.clientWidth;
+      this.$refs.canvas.height = this.$refs.player.clientHeight + 1;
+    },
+    setupAudio() {
+      const audio = this.audioElement;
       audio.volume = this.volumeValue / 100;
 
       audio.ontimeupdate = () => {
         this.currentTime = audio.currentTime;
+        this.setupCanvas();
       };
 
       audio.oncanplay = () => {
@@ -177,62 +186,10 @@ export default defineComponent({
         }
       };
     },
-    canvasInitialize() {
-      this.$refs.canvas.width = this.$refs.player.clientWidth;
-      this.$refs.canvas.height = this.$refs.player.clientHeight;
-    },
-    audioVisuallizerAndEqualiser() {
-      const canvasWidth = this.$refs.canvas.width;
-      const canvasHeight = this.$refs.canvas.height;
-
-      const audioContext = new AudioContext();
+    animateVisualiser() {
       const canvasContext = this.$refs.canvas.getContext("2d");
 
-      const audioSource = audioContext.createMediaElementSource(
-        this.$refs.audio
-      );
-      const analyser = audioContext.createAnalyser();
-
-      function createFilter(frequency) {
-        const filter = audioContext.createBiquadFilter();
-
-        filter.type = "peaking";
-        filter.frequency.value = frequency;
-        filter.Q.value = 1;
-        filter.gain.value = 0;
-
-        return filter;
-      }
-
-      function createFilters() {
-        const frequencies = [
-          60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000,
-        ];
-        const filters = frequencies.map(createFilter);
-
-        filters.reduce(function (prev, curr) {
-          prev.connect(curr);
-          return curr;
-        });
-
-        return filters;
-      }
-
-      const filters = ref(createFilters());
-      console.log(filters);
-
-      audioSource.connect(filters.value[0]);
-      audioSource.connect(analyser);
-      filters.value[filters.value.length - 1].connect(audioContext.destination);
-      analyser.connect(audioContext.destination);
-
-      analyser.fftSize = 32;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-
-      const barWidth = canvasWidth / bufferLength;
-
+      const bufferLength = this.analyser.frequencyBinCount;
       const collorArray = [
         "#cc241d",
         "#d65d0e",
@@ -244,44 +201,46 @@ export default defineComponent({
         "#928374",
       ];
 
-      function animate() {
-        let x = canvasWidth / 2;
+      const canvasWidth = this.$refs.canvas.width;
+      const canvasHeight = this.$refs.canvas.height;
 
-        canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-        analyser.getByteFrequencyData(dataArray);
+      // const barOffset = canvasWidth / bufferLength - 10;
+      const barOffset = 0;
+      const barWidth = canvasWidth / bufferLength - barOffset;
+      let x = canvasWidth / 2 + barOffset / 2;
 
-        for (let i = 0; i < bufferLength; i += 2) {
-          let barHeight = (canvasHeight / 2 / 255) * dataArray[i];
+      canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+      this.analyser.getByteFrequencyData(this.visualiserDataArray);
 
-          canvasContext.fillStyle = collorArray[(i / 2) % 8];
-          canvasContext.fillRect(
-            x,
-            canvasHeight - barHeight,
-            barWidth,
-            barHeight
-          );
-          x += barWidth;
-        }
+      for (let i = 0; i < bufferLength; i += 2) {
+        let barHeight = (canvasHeight / 2 / 255) * this.visualiserDataArray[i];
 
-        x = canvasWidth / 2 - barWidth;
-
-        for (let i = 1; i < bufferLength; i += 2) {
-          let barHeight = (canvasHeight / 2 / 255) * dataArray[i];
-
-          canvasContext.fillStyle = collorArray[Math.floor(i / 2) % 8];
-          canvasContext.fillRect(
-            x,
-            canvasHeight - barHeight,
-            barWidth,
-            barHeight
-          );
-          x -= barWidth;
-        }
-
-        requestAnimationFrame(animate);
+        canvasContext.fillStyle = collorArray[(i / 2) % 8];
+        canvasContext.fillRect(
+          x,
+          canvasHeight - barHeight,
+          barWidth,
+          barHeight
+        );
+        x += barWidth + barOffset;
       }
 
-      animate();
+      x = canvasWidth / 2 - barWidth - barOffset / 2;
+
+      for (let i = 1; i < bufferLength; i += 2) {
+        let barHeight = (canvasHeight / 2 / 255) * this.visualiserDataArray[i];
+
+        canvasContext.fillStyle = collorArray[Math.floor(i / 2) % 8];
+        canvasContext.fillRect(
+          x,
+          canvasHeight - barHeight,
+          barWidth,
+          barHeight
+        );
+        x -= barWidth + barOffset;
+      }
+
+      requestAnimationFrame(this.animateVisualiser);
     },
   },
   computed: {
@@ -303,9 +262,9 @@ export default defineComponent({
   },
   mounted() {
     this.loadTrack();
-    this.initAudio();
-    this.canvasInitialize();
-    this.audioVisuallizerAndEqualiser();
+    this.setupAudio();
+    this.setupCanvas();
+    this.animateVisualiser();
   },
   watch: {
     currentPath() {
@@ -334,6 +293,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 .player {
@@ -359,10 +319,5 @@ body {
   margin: 30px 20px;
   padding: 0 25px;
   font-size: 1.1rem;
-}
-
-.explorer-header {
-  margin: 10px 0;
-  text-align: center;
 }
 </style>
