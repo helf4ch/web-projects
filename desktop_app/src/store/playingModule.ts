@@ -1,10 +1,29 @@
+function shuffle(array) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
+
 export const playingModule = {
   state: () => ({
+    isShuffleTurnOn: false,
     isEqualiserTurnOn: false,
     isEqualiserShown: false,
     pathToTrackList: "",
     isPlaying: false,
     trackList: [],
+    shuffleList: [],
     trackIndex: 0,
     repeatType: {
       repeatTrack: true,
@@ -25,6 +44,10 @@ export const playingModule = {
     },
     setTrackList(state, trackList) {
       state.trackList = trackList;
+      state.shuffleList = [];
+      for (let i = 0; i < trackList.length; ++i) {
+        state.shuffleList.push(i);
+      }
     },
     setTrackIndex(state, index) {
       if (index >= state.trackList.length) {
@@ -34,17 +57,22 @@ export const playingModule = {
       }
     },
     nextTrack(state) {
-      if (state.trackIndex >= state.trackList.length - 1) {
-        state.trackIndex = 0;
+      if (
+        state.shuffleList.indexOf(state.trackIndex) >=
+        state.trackList.length - 1
+      ) {
+        state.trackIndex = state.shuffleList[0];
       } else {
-        state.trackIndex += 1;
+        state.trackIndex =
+          state.shuffleList[state.shuffleList.indexOf(state.trackIndex) + 1];
       }
     },
     prevTrack(state) {
-      if (state.trackIndex <= 0) {
-        state.trackIndex = state.trackList.length - 1;
+      if (state.shuffleList.indexOf(state.trackIndex) <= 0) {
+        state.trackIndex = state.shuffleList[state.trackList.length - 1];
       } else {
-        state.trackIndex -= 1;
+        state.trackIndex =
+          state.shuffleList[state.shuffleList.indexOf(state.trackIndex) - 1];
       }
     },
     switchRepeat(state) {
@@ -61,13 +89,25 @@ export const playingModule = {
     },
     reloadPlayer(state) {
       state.isPlaying = false;
-      state.trackIndex = 0;
+      state.trackIndex = state.shuffleList[0];
     },
     switchEqualiserOnAndOf(state) {
       state.isEqualiserTurnOn = !state.isEqualiserTurnOn;
     },
     switchEqualiserShown(state) {
       state.isEqualiserShown = !state.isEqualiserShown;
+    },
+    switchShuffleOnAndOf(state) {
+      state.isShuffleTurnOn = !state.isShuffleTurnOn;
+    },
+    shuffleTrackList(state) {
+      state.shuffleList = shuffle(state.shuffleList);
+    },
+    unshuffleTrackList(state) {
+      state.shuffleList = [];
+      for (let i = 0; i < state.trackList.length; ++i) {
+        state.shuffleList.push(i);
+      }
     },
   },
   actions: {

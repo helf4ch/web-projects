@@ -1,13 +1,11 @@
 <template>
-  <div class="details">
-    <div class="track-title" v-if="trackList[trackIndex].title">
-      {{ trackList[trackIndex].title }}
+  <div class="info">
+    <div class="track-number" v-if="trackList">
+      {{ trackIndex + 1 }} OF {{ trackList.length }}
     </div>
-    <div class="track-title" v-else>Unknown</div>
-    <div class="track-artist" v-if="trackList[trackIndex].artist">
-      {{ trackList[trackIndex].artist }}
+    <div class="track-path" v-if="pathToTrackList">
+      {{ pathToTrackList }}
     </div>
-    <div class="track-artist" v-else>Unknown</div>
   </div>
 </template>
 
@@ -18,15 +16,16 @@ import { mapState } from "vuex";
 export default defineComponent({
   computed: {
     ...mapState({
-      trackList: (state) => state.player.trackList,
       trackIndex: (state) => state.player.trackIndex,
+      trackList: (state) => state.player.trackList,
+      pathToTrackList: (state) => state.player.pathToTrackList,
     }),
   },
 });
 </script>
 
 <style scoped>
-.details {
+.info {
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -34,14 +33,14 @@ export default defineComponent({
   padding: 5px 0px;
 }
 
-.track-title {
-  font-size: 3rem;
+.track-path {
+  font-size: 0.8rem;
   text-align: center;
   padding: 3px 0;
 }
 
-.track-artist {
-  font-size: 1.5rem;
+.track-number {
+  font-size: 1rem;
   text-align: center;
   padding: 3px 0;
 }

@@ -1,5 +1,6 @@
 <template>
   <div ref="player" class="player">
+    <info-panel></info-panel>
     <equaliser-panel
       :equaliserGainValues="equaliserGainValues"
       @changeGainValueById="changeGainValueById"
@@ -33,6 +34,7 @@ import DetailPanel from "@/components/player/DetailPanel.vue";
 import SlidersPanel from "@/components/player/SlidersPanel.vue";
 import ButtonsPanel from "@/components/player/ButtonsPanel.vue";
 import EqualiserPanel from "@/components/player/EqualiserPanel.vue";
+import InfoPanel from "@/components/player/InfoPanel.vue";
 import ExplorerElementList from "@/components/explorer/ExplorerElementList.vue";
 import ExplorerHeader from "@/components/explorer/ExplorerHeader.vue";
 import { getFiles } from "@/hooks/getFiles";
@@ -50,12 +52,13 @@ export default defineComponent({
     ExplorerElementList,
     ExplorerHeader,
     EqualiserPanel,
+    InfoPanel,
   },
   setup() {
     let path = ref(app.getPath("music"));
 
     let { files } = getFiles(path);
-    let { trackList } = getTracks(files);
+    let { tracks } = getTracks(files);
 
     const { audioElement, analyser, filters, visualiserDataArray } =
       initAudio();
@@ -63,7 +66,7 @@ export default defineComponent({
     return {
       path,
       files,
-      trackList,
+      tracks,
       audioElement,
       analyser,
       filters,
@@ -96,6 +99,9 @@ export default defineComponent({
       setAppPath: "explorer/setAppPath",
       setFilesArray: "explorer/setFilesArray",
       reloadPlayer: "player/reloadPlayer",
+      shuffleTrackList: "player/shuffleTrackList",
+      setTrackIndex: "player/setTrackIndex",
+      unshuffleTrackList: "player/unshuffleTrackList",
     }),
     ...mapActions({
       onEnd: "player/onEnd",
@@ -103,7 +109,7 @@ export default defineComponent({
     changeTrackList() {
       this.reloadPlayer();
       this.setPathToTrackList(this.path);
-      this.setTrackList(this.trackList);
+      this.setTrackList(this.tracks);
       this.onTrackChange();
     },
     reloadExplorer() {
@@ -249,17 +255,18 @@ export default defineComponent({
     ...mapState({
       currentPath: (state) => state.explorer.currentPath,
       isPlaying: (state) => state.player.isPlaying,
-      trackList: (state) => state.player.trackList,
       trackIndex: (state) => state.player.trackIndex,
       repeatType: (state) => state.player.repeatType,
       pathToTrackList: (state) => state.player.pathToTrackList,
       isExplorerActive: (state) => state.explorer.isExplorerActive,
       isEqualiserTurnOn: (state) => state.player.isEqualiserTurnOn,
+      isShuffleTurnOn: (state) => state.player.isShuffleTurnOn,
+      trackList: (state) => state.player.trackList,
     }),
   },
   created() {
     this.setPathToTrackList(this.path);
-    this.setTrackList(this.trackList);
+    this.setTrackList(this.tracks);
     this.setAppPath(this.path);
     this.setFilesArray(this.files);
   },
@@ -294,6 +301,13 @@ export default defineComponent({
         for (let i = 0; i < 10; ++i) {
           this.filters[i].gain.value = 0;
         }
+      }
+    },
+    isShuffleTurnOn() {
+      if (this.isShuffleTurnOn) {
+        this.shuffleTrackList();
+      } else {
+        this.unshuffleTrackList();
       }
     },
   },

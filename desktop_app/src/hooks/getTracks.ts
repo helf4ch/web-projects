@@ -2,7 +2,7 @@ import { computed } from "vue";
 import pathModule from "path";
 
 export function getTracks(files) {
-  const trackList = computed(() => {
+  const tracks = computed(() => {
     return files.value
       .filter((file) => {
         if (!file.isDirectory) {
@@ -32,6 +32,6 @@ export function getTracks(files) {
   });
 
   return {
-    trackList,
+    tracks,
   };
 }
