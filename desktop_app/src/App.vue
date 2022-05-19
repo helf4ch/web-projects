@@ -1,9 +1,9 @@
 <template>
   <div ref="player" class="player">
-    <equaliser-sliders
+    <equaliser-panel
       :equaliserGainValues="equaliserGainValues"
       @changeGainValueById="changeGainValueById"
-    ></equaliser-sliders>
+    ></equaliser-panel>
     <detail-panel></detail-panel>
     <player-controll-buttons
       @repeatTrack="repeatTrack"
@@ -32,7 +32,7 @@ import PlayerControllButtons from "@/components/player/PlayerControllButtons.vue
 import DetailPanel from "@/components/player/DetailPanel.vue";
 import SlidersPanel from "@/components/player/SlidersPanel.vue";
 import ButtonsPanel from "@/components/player/ButtonsPanel.vue";
-import EqualiserSliders from "@/components/player/EqualiserSliders.vue";
+import EqualiserPanel from "@/components/player/EqualiserPanel.vue";
 import ExplorerElementList from "@/components/explorer/ExplorerElementList.vue";
 import ExplorerHeader from "@/components/explorer/ExplorerHeader.vue";
 import { getFiles } from "@/hooks/getFiles";
@@ -49,7 +49,7 @@ export default defineComponent({
     ButtonsPanel,
     ExplorerElementList,
     ExplorerHeader,
-    EqualiserSliders,
+    EqualiserPanel,
   },
   setup() {
     let path = ref(app.getPath("music"));
@@ -149,7 +149,9 @@ export default defineComponent({
     },
     changeGainValueById(gainValueId, newValue) {
       this.equaliserGainValues[gainValueId].gain = Number(newValue);
-      this.filters[gainValueId].gain.value = Number(newValue);
+      if (this.isEqualiserTurnOn) {
+        this.filters[gainValueId].gain.value = Number(newValue);
+      }
     },
     setupCanvas() {
       this.$refs.canvas.width = this.$refs.player.clientWidth;
@@ -252,6 +254,7 @@ export default defineComponent({
       repeatType: (state) => state.player.repeatType,
       pathToTrackList: (state) => state.player.pathToTrackList,
       isExplorerActive: (state) => state.explorer.isExplorerActive,
+      isEqualiserTurnOn: (state) => state.player.isEqualiserTurnOn,
     }),
   },
   created() {
@@ -281,6 +284,17 @@ export default defineComponent({
     },
     trackIndex() {
       this.onTrackChange();
+    },
+    isEqualiserTurnOn() {
+      if (this.isEqualiserTurnOn) {
+        for (let i = 0; i < 10; ++i) {
+          this.filters[i].gain.value = this.equaliserGainValues[i].gain;
+        }
+      } else {
+        for (let i = 0; i < 10; ++i) {
+          this.filters[i].gain.value = 0;
+        }
+      }
     },
   },
 });

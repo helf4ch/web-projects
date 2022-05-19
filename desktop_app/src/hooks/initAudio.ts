@@ -41,8 +41,6 @@ export function initAudio() {
 
   return {
     audioElement,
-    // audioContext,
-    // audioSource,
     analyser,
     filters,
     visualiserDataArray,

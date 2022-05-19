@@ -1,5 +1,7 @@
 export const playingModule = {
   state: () => ({
+    isEqualiserTurnOn: false,
+    isEqualiserShown: false,
     pathToTrackList: "",
     isPlaying: false,
     trackList: [],
@@ -60,6 +62,12 @@ export const playingModule = {
     reloadPlayer(state) {
       state.isPlaying = false;
       state.trackIndex = 0;
+    },
+    switchEqualiserOnAndOf(state) {
+      state.isEqualiserTurnOn = !state.isEqualiserTurnOn;
+    },
+    switchEqualiserShown(state) {
+      state.isEqualiserShown = !state.isEqualiserShown;
     },
   },
   actions: {
