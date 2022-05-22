@@ -126,7 +126,9 @@ export default defineComponent({
       }
     },
     playTrack() {
-      this.audioElement.play();
+      if (this.audioElement.src != "") {
+        this.audioElement.play();
+      }
     },
     pauseTrack() {
       this.audioElement.pause();
@@ -137,7 +139,10 @@ export default defineComponent({
       this.playTrack();
     },
     loadTrack() {
-      this.audioElement.src = "file://" + this.trackList[this.trackIndex].path;
+      if (this.trackList[this.trackIndex].path != "") {
+        this.audioElement.src =
+          "file://" + this.trackList[this.trackIndex].path;
+      }
       this.audioElement.load();
     },
     onTrackChange() {
@@ -187,7 +192,7 @@ export default defineComponent({
         }
         if (
           this.repeatType.repeatOff &&
-          this.trackIndex == this.trackList.length - 1
+          this.shuffleList.indexOf(this.trackIndex) == this.trackList.length - 1
         ) {
           this.pauseTrack();
           this.loadTrack();
@@ -262,6 +267,7 @@ export default defineComponent({
       isEqualiserTurnOn: (state) => state.player.isEqualiserTurnOn,
       isShuffleTurnOn: (state) => state.player.isShuffleTurnOn,
       trackList: (state) => state.player.trackList,
+      shuffleList: (state) => state.player.shuffleList,
     }),
   },
   created() {
@@ -322,6 +328,19 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-track {
+  background-color: #282828;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #665c54;
+  border-radius: 10px;
 }
 
 .player {

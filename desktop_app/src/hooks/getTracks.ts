@@ -31,6 +31,14 @@ export function getTracks(files) {
       });
   });
 
+  if (tracks.value.length === 0) {
+    tracks.value.push({
+      artist: "No tracks found",
+      title: "Empty playlist",
+      path: "",
+    });
+  }
+
   return {
     tracks,
   };

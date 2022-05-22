@@ -117,7 +117,8 @@ export const playingModule = {
       }
       if (
         state.repeatType.repeatOff &&
-        state.trackIndex != state.trackList.length - 1
+        state.shuffleList.indexOf(state.trackIndex) !=
+          state.trackList.length - 1
       ) {
         commit("nextTrack");
       }
