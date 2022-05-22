@@ -3,7 +3,7 @@ import pathModule from "path";
 
 export function getTracks(files) {
   const tracks = computed(() => {
-    return files.value
+    const value = files.value
       .filter((file) => {
         if (!file.isDirectory) {
           return true;
@@ -29,15 +29,17 @@ export function getTracks(files) {
           path: file.path,
         };
       });
-  });
 
-  if (tracks.value.length === 0) {
-    tracks.value.push({
-      artist: "No tracks found",
-      title: "Empty playlist",
-      path: "",
-    });
-  }
+    if (value.length === 0) {
+      value.push({
+        artist: "No tracks found",
+        title: "Empty playlist",
+        path: "",
+      });
+    }
+
+    return value;
+  });
 
   return {
     tracks,
