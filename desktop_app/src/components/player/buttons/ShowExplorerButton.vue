@@ -1,7 +1,6 @@
 <template>
   <player-button @click="changeExplorerActive">
-    <music-list-icon v-if="isExplorerActive" class="active"></music-list-icon>
-    <music-list-icon v-else></music-list-icon>
+    <music-list-icon :class="{ active: isExplorerActive }"></music-list-icon>
   </player-button>
 </template>
 

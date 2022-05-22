@@ -1,11 +1,6 @@
 <template>
-  <player-button>
-    <shuffle-icon
-      v-if="isShuffleTurnOn"
-      class="active"
-      @click="switchShuffleOnAndOf"
-    ></shuffle-icon>
-    <shuffle-icon v-else @click="switchShuffleOnAndOf"></shuffle-icon>
+  <player-button @click="switchShuffleOnAndOf">
+    <shuffle-icon :class="{ active: isShuffleTurnOn }"></shuffle-icon>
   </player-button>
 </template>
 

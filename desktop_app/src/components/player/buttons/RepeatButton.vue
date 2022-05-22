@@ -1,20 +1,18 @@
 <template>
   <player-button @click="this.switchRepeat">
     <arrow-repeat-icon
-      class="active"
-      v-if="$store.state.player.repeatType.repeatTrack"
+      :class="{
+        active: repeatType.repeatTrack,
+        'not-active': repeatType.repeatOff,
+      }"
     ></arrow-repeat-icon>
-    <arrow-repeat-icon
-      v-else-if="$store.state.player.repeatType.repeatFolder"
-    ></arrow-repeat-icon>
-    <arrow-repeat-icon v-else class="not-active"></arrow-repeat-icon>
   </player-button>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import ArrowRepeatIcon from "@/components/UI/icons/ArrowRepeatIcon.vue";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default defineComponent({
   components: {
@@ -23,6 +21,11 @@ export default defineComponent({
   methods: {
     ...mapMutations({
       switchRepeat: "player/switchRepeat",
+    }),
+  },
+  computed: {
+    ...mapState({
+      repeatType: (state) => state.player.repeatType,
     }),
   },
 });
